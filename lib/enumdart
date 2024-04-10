@@ -1,0 +1,10 @@
+
+enum PaintingTool {
+  scrolling,
+  selection,
+  drawing;
+
+  bool get isScrolling => this == PaintingTool.scrolling;
+  bool get isSelection => this == PaintingTool.selection;
+  bool get isDrawing => this == PaintingTool.drawing;
+}
