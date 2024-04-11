@@ -1,9 +1,9 @@
 import 'package:drawing_studio/enumdart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'controller.dart';
+import 'grid.dart';
 import 'paint_studio.dart';
 import 'shape.dart';
 import 'toolbar.dart';
@@ -41,10 +41,7 @@ class _ZoneFloorPlanState extends State<ZoneFloorPlan>
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final imageSize = _getScalingSize(constraints, 1);
-        if (kDebugMode) {
-          print(imageSize);
-        }
+        final imageSize = _getImageInitialSize(constraints, _imageSize);
         return ListenableBuilder(
           listenable: _paintingController,
           builder: (context, child) {
@@ -60,6 +57,7 @@ class _ZoneFloorPlanState extends State<ZoneFloorPlan>
                       minScale: 1,
                       maxScale: 10,
                       scaleEnabled: false,
+                      constrained: false,
                       transformationController: _transformationController,
                       child: Stack(
                         children: [
@@ -71,8 +69,16 @@ class _ZoneFloorPlanState extends State<ZoneFloorPlan>
                             alignment: Alignment.topLeft,
                             filterQuality: FilterQuality.high,
                           ),
-                          ShapePaintingStudio(
-                            controller: _paintingController,
+                          const Positioned.fill(
+                            child: CustomPaint(
+                              painter: DrawingGridPainter(),
+                              size: Size.infinite,
+                            ),
+                          ),
+                          Positioned.fill(
+                            child: ShapePaintingStudio(
+                              controller: _paintingController,
+                            ),
                           ),
                         ],
                       ),
@@ -107,12 +113,6 @@ class _ZoneFloorPlanState extends State<ZoneFloorPlan>
         selectedShapes: const <PolygonShape>[],
       ),
     );
-  }
-
-  Size _getScalingSize(BoxConstraints constraints, double scale) {
-    final initialImageSize = _getImageInitialSize(constraints, _imageSize);
-    final currentImageSize = initialImageSize * scale;
-    return currentImageSize;
   }
 
   Size _getImageInitialSize(BoxConstraints constraints, Size originSize) {
